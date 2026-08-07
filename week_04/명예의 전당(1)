@@ -1,0 +1,147 @@
+# 명예의 전당 (1)
+
+## 문제 링크
+
+https://school.programmers.co.kr/learn/courses/30/lessons/138477
+
+## 내 답
+
+```java
+import java.util.PriorityQueue;
+
+class Solution {
+    public int[] solution(int k, int[] score) {
+        int[] answer = new int[score.length];
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        for (int i = 0; i < score.length; i++) {
+            pq.add(score[i]);
+
+            if (pq.size() > k) {
+                pq.poll();
+            }
+
+            answer[i] = pq.peek();
+        }
+
+        return answer;
+    }
+}
+```
+
+## 내 답 풀이
+
+`PriorityQueue`를 최소 힙으로 사용해서 현재 명예의 전당에 들어있는 점수 중 가장 낮은 점수를 빠르게 확인하도록 했다.
+
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+```
+
+Java의 `PriorityQueue`는 기본적으로 최소 힙이므로 가장 작은 값이 `peek()` 위치에 온다.
+
+매일 새로운 점수를 우선순위 큐에 추가한다.
+
+```java
+pq.add(score[i]);
+```
+
+만약 명예의 전당 인원이 `k`명을 초과하면 가장 낮은 점수를 제거한다.
+
+```java
+if (pq.size() > k) {
+    pq.poll();
+}
+```
+
+최소 힙이므로 `poll()`을 하면 현재 가장 작은 점수가 제거된다.
+
+따라서 항상 우선순위 큐에는 가장 높은 점수 `k`개만 남게 된다.
+
+그 후 현재 명예의 전당에서 가장 낮은 점수를 발표 점수로 저장한다.
+
+```java
+answer[i] = pq.peek();
+```
+
+예를 들어 `k = 3`이고 점수가 다음과 같다면
+
+```text
+10, 100, 20, 150
+```
+
+진행 과정은 다음과 같다.
+
+```text
+[10]          → 발표 10
+
+[10, 100]     → 발표 10
+
+[10, 20, 100] → 발표 10
+
+150 추가
+→ [10, 20, 100, 150]
+
+가장 작은 10 제거
+
+[20, 100, 150] → 발표 20
+```
+
+즉, 매일 상위 `k`개의 점수만 유지하고 그중 가장 낮은 점수를 반환하는 방식이다.
+
+## 더 좋은 답
+
+```java
+import java.util.PriorityQueue;
+
+class Solution {
+    public int[] solution(int k, int[] score) {
+        int[] answer = new int[score.length];
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        for (int i = 0; i < score.length; i++) {
+            pq.offer(score[i]);
+
+            if (pq.size() > k) {
+                pq.poll();
+            }
+
+            answer[i] = pq.peek();
+        }
+
+        return answer;
+    }
+}
+```
+
+## 왜 더 좋은가?
+
+알고리즘 자체는 기존 답과 동일하다.
+
+다만 `PriorityQueue`는 Queue 계열 자료구조이므로 값 추가 시 `add()`보다 `offer()`를 사용하는 방식이 조금 더 일반적이다.
+
+```java
+pq.offer(score[i]);
+```
+
+코딩테스트에서는 보통
+
+```text
+삽입 → offer()
+삭제 → poll()
+조회 → peek()
+```
+
+형태로 통일해서 사용하는 경우가 많다.
+
+성능 차이는 거의 없으며, 기존 답도 이미 이 문제에 매우 적합한 풀이이다.
+
+특히 배열을 매번 정렬하는 방식과 달리, 최소 힙을 사용하면 상위 `k`개의 값만 효율적으로 관리할 수 있다.
+
+## 사용한 알고리즘
+
+* 우선순위 큐
+* 최소 힙
+* Top K 관리
+* 시간 복잡도: `O(N log K)`
+* 공간 복잡도: `O(K)`
